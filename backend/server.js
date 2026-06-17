@@ -63,14 +63,14 @@ const limiter = rateLimit({
   max: 200,
   message: { success: false, message: 'Trop de requêtes, réessayez dans 15 minutes.' }
 });
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 5,
-  message: { success: false, message: 'Trop de tentatives de connexion.' }
-});
+// const authLimiter = rateLimit({
+//   windowMs: 15 * 60 * 1000,
+//   max: 5,
+//   message: { success: false, message: 'Trop de tentatives de connexion.' }
+// });
 
 app.use('/api', limiter);
-app.use('/api/auth/login', authLimiter);
+// app.use('/api/auth/login', authLimiter);
 
 // Socket.io
 setupSocket(io);
