@@ -1,0 +1,41 @@
+services:
+  # ── Backend API (Node.js) ──────────────────────────────────────────────────
+  - type: web
+    name: pharmaerp-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false          # à renseigner dans le dashboard Render
+      - key: JWT_SECRET
+        sync: false          # à renseigner dans le dashboard Render
+      - key: JWT_EXPIRE
+        value: 24h
+      - key: JWT_REFRESH_EXPIRE
+        value: 7d
+      - key: CLIENT_URL
+        sync: false          # URL du frontend (ex: https://pharmaerp-frontend.onrender.com)
+      - key: CLAUDE_API_KEY
+        sync: false          # optionnel — pour l'IA Analytics
+    healthCheckPath: /api/health
+
+  # ── Frontend (React / Vite) ────────────────────────────────────────────────
+  - type: web
+    name: pharmaerp-frontend
+    runtime: static
+    rootDir: Mon-app
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false          # URL du backend (ex: https://pharmaerp-backend.onrender.com/api)
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
