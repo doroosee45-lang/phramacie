@@ -101,14 +101,6 @@ app.get('/api/health', (_req, res) =>
 // Static uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Production: serve React build
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/dist')));
-  app.get('*', (_req, res) =>
-    res.sendFile(path.resolve(__dirname, '../frontend/dist/index.html'))
-  );
-}
-
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
