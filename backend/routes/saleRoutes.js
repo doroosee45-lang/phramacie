@@ -1,0 +1,10 @@
+const express = require('express');
+const r = express.Router();
+const { createSale, getSales, getSale, refundSale, getTodaySummary } = require('../controllers/saleController');
+const { protect } = require('../middleware/authMiddleware');
+r.use(protect);
+r.get('/summary/today', getTodaySummary);
+r.route('/').get(getSales).post(createSale);
+r.route('/:id').get(getSale);
+r.post('/:id/refund', refundSale);
+module.exports = r;

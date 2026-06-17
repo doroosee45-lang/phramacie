@@ -1,0 +1,12 @@
+const express = require('express');
+const r = express.Router();
+const { getKPIs, getSalesChart, getCategoryChart, getTopProducts, getStockMovements, getPaymentMethods } = require('../controllers/dashboardController');
+const { protect } = require('../middleware/authMiddleware');
+r.use(protect);
+r.get('/kpis',            getKPIs);
+r.get('/sales-chart',     getSalesChart);
+r.get('/category-chart',  getCategoryChart);
+r.get('/top-products',    getTopProducts);
+r.get('/stock-movements', getStockMovements);
+r.get('/payment-methods', getPaymentMethods);
+module.exports = r;
