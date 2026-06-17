@@ -310,8 +310,10 @@ export default function POSPage() {
           )}
         </div>
 
-        {/* Liste des articles */}
-        <div className="overflow-y-auto px-4 py-3 space-y-2 max-h-[38vh] lg:max-h-none lg:flex-1 min-h-0">
+        {/* ── ZONE SCROLLABLE : articles + totaux + paiement ── */}
+        <div className="flex-1 overflow-y-auto min-h-0 px-4 py-3 space-y-3">
+
+          {/* Articles */}
           {cart.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-32 text-slate-600 gap-2">
               <ShoppingCart size={28} className="opacity-30" />
@@ -319,142 +321,127 @@ export default function POSPage() {
               <span className="text-xs text-slate-700">Sélectionnez des médicaments</span>
             </div>
           ) : (
-            cart.map((item, idx) => (
-              <div key={item._id} className="flex items-center gap-3 bg-slate-800 border border-slate-700/60 rounded-xl p-2.5">
-                {/* Numéro */}
-                <span className="text-[10px] text-slate-600 font-mono w-4 flex-shrink-0 text-center">{idx + 1}</span>
-
-                {/* Nom + prix unitaire */}
-                <div className="flex-1 min-w-0">
-                  <div className="text-xs font-medium text-slate-100 truncate">{item.name}</div>
-                  <div className="text-[10px] text-slate-500 mono">{item.retailPrice?.toLocaleString()} CDF / unité</div>
-                </div>
-
-                {/* Contrôle quantité */}
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  <button
-                    onClick={() => updateQty(item._id, -1)}
-                    className="w-7 h-7 rounded-lg bg-slate-700 hover:bg-red-900/40 hover:text-red-400 flex items-center justify-center text-slate-300 transition-colors"
-                  >
-                    <Minus size={12} />
-                  </button>
-                  <span className="w-7 text-center text-sm font-bold mono text-slate-100">{item.qty}</span>
-                  <button
-                    onClick={() => updateQty(item._id, 1)}
-                    className="w-7 h-7 rounded-lg bg-slate-700 hover:bg-emerald-900/40 hover:text-emerald-400 flex items-center justify-center text-slate-300 transition-colors"
-                  >
-                    <Plus size={12} />
+            <div className="space-y-2">
+              {cart.map((item, idx) => (
+                <div key={item._id} className="flex items-center gap-3 bg-slate-800 border border-slate-700/60 rounded-xl p-2.5">
+                  <span className="text-[10px] text-slate-600 font-mono w-4 flex-shrink-0 text-center">{idx + 1}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-medium text-slate-100 truncate">{item.name}</div>
+                    <div className="text-[10px] text-slate-500 mono">{item.retailPrice?.toLocaleString()} CDF / unité</div>
+                  </div>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <button onClick={() => updateQty(item._id, -1)} className="w-7 h-7 rounded-lg bg-slate-700 hover:bg-red-900/40 hover:text-red-400 flex items-center justify-center text-slate-300 transition-colors">
+                      <Minus size={12} />
+                    </button>
+                    <span className="w-7 text-center text-sm font-bold mono text-slate-100">{item.qty}</span>
+                    <button onClick={() => updateQty(item._id, 1)} className="w-7 h-7 rounded-lg bg-slate-700 hover:bg-emerald-900/40 hover:text-emerald-400 flex items-center justify-center text-slate-300 transition-colors">
+                      <Plus size={12} />
+                    </button>
+                  </div>
+                  <div className="text-right flex-shrink-0 min-w-[60px]">
+                    <div className="text-xs font-bold mono text-emerald-400">{(item.retailPrice * item.qty).toLocaleString()}</div>
+                    <div className="text-[9px] text-slate-600">CDF</div>
+                  </div>
+                  <button onClick={() => removeItem(item._id)} className="text-slate-600 hover:text-red-400 transition-colors p-0.5 flex-shrink-0">
+                    <X size={14} />
                   </button>
                 </div>
+              ))}
+            </div>
+          )}
 
-                {/* Sous-total ligne */}
-                <div className="text-right flex-shrink-0 min-w-[64px]">
-                  <div className="text-xs font-bold mono text-emerald-400">{(item.retailPrice * item.qty).toLocaleString()}</div>
-                  <div className="text-[9px] text-slate-600">CDF</div>
+          {/* Totaux + paiement (visibles dans le scroll) */}
+          {cart.length > 0 && (
+            <div className="space-y-3 pt-1">
+              {/* Récapitulatif */}
+              <div className="bg-slate-800/60 rounded-xl px-3 py-2.5 space-y-1.5">
+                <div className="flex justify-between text-xs text-slate-400">
+                  <span>Sous-total HT</span>
+                  <span className="mono">{subtotal.toLocaleString()} CDF</span>
                 </div>
-
-                {/* Supprimer */}
-                <button onClick={() => removeItem(item._id)} className="text-slate-600 hover:text-red-400 transition-colors p-0.5">
-                  <X size={14} />
-                </button>
+                {discountAmt > 0 && (
+                  <div className="flex justify-between text-xs text-emerald-500">
+                    <span>Remise ({discount}%)</span>
+                    <span className="mono">− {discountAmt.toLocaleString()} CDF</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-xs text-slate-500">
+                  <span>TVA (19%)</span>
+                  <span className="mono">+ {Math.round(tva).toLocaleString()} CDF</span>
+                </div>
+                <div className="flex justify-between items-center border-t border-slate-700 pt-1.5 mt-1">
+                  <span className="text-sm font-bold text-slate-100">TOTAL TTC</span>
+                  <span className="text-base font-bold mono text-emerald-400">{Math.round(total).toLocaleString()} CDF</span>
+                </div>
               </div>
-            ))
+
+              {/* Remise */}
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-slate-500 flex-1">Remise globale</span>
+                <div className="flex items-center gap-1 bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5">
+                  <input
+                    type="number" min={0} max={100}
+                    className="bg-transparent w-12 text-sm text-right text-slate-200 focus:outline-none mono"
+                    value={discount}
+                    onChange={e => setDiscount(Math.min(100, Math.max(0, +e.target.value)))}
+                  />
+                  <span className="text-xs text-slate-500">%</span>
+                </div>
+              </div>
+
+              {/* Modes de paiement */}
+              <div className="grid grid-cols-5 gap-1.5">
+                {PAY_METHODS.map(({ id, label, icon: Icon }) => (
+                  <button key={id} onClick={() => setPayMethod(id)} title={label}
+                    className={`flex flex-col items-center gap-1 py-2 rounded-xl border text-[10px] font-medium transition-all ${
+                      payMethod === id
+                        ? 'border-pharma-light bg-pharma-pale/20 text-pharma-light'
+                        : 'border-slate-700 text-slate-500 hover:border-slate-600 hover:text-slate-300'
+                    }`}>
+                    <Icon size={15} />
+                    <span>{label}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Montant remis */}
+              {payMethod === 'espèces' && (
+                <div className="space-y-1.5">
+                  <input
+                    type="number" className="input input-sm"
+                    placeholder={`Montant remis CDF (min. ${Math.ceil(total).toLocaleString()})`}
+                    value={amountPaid}
+                    onChange={e => setAmountPaid(e.target.value)}
+                  />
+                  {change > 0 && (
+                    <div className="flex items-center justify-between bg-emerald-900/25 border border-emerald-900/50 rounded-lg px-3 py-2">
+                      <span className="text-xs text-emerald-400">Monnaie à rendre</span>
+                      <span className="text-sm font-bold mono text-emerald-400">{Math.round(change).toLocaleString()} CDF</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           )}
         </div>
 
-        {/* Zone de paiement + Encaisser */}
+        {/* ── BOUTON ENCAISSER toujours visible en bas ── */}
         {cart.length > 0 && (
-          <div className="border-t border-slate-800 px-4 py-3 space-y-3 flex-shrink-0 bg-slate-900/95">
-
-            {/* Récapitulatif totaux */}
-            <div className="bg-slate-800/60 rounded-xl px-3 py-2.5 space-y-1.5">
-              <div className="flex justify-between text-xs text-slate-400">
-                <span>Sous-total HT</span>
-                <span className="mono">{subtotal.toLocaleString()} CDF</span>
-              </div>
-              {discountAmt > 0 && (
-                <div className="flex justify-between text-xs text-emerald-500">
-                  <span>Remise ({discount}%)</span>
-                  <span className="mono">− {discountAmt.toLocaleString()} CDF</span>
-                </div>
-              )}
-              <div className="flex justify-between text-xs text-slate-500">
-                <span>TVA (19%)</span>
-                <span className="mono">+ {tva.toLocaleString()} CDF</span>
-              </div>
-              <div className="flex justify-between items-center border-t border-slate-700 pt-1.5 mt-1">
-                <span className="text-sm font-bold text-slate-100">TOTAL TTC</span>
-                <span className="text-lg font-bold mono text-emerald-400">{total.toLocaleString()} CDF</span>
-              </div>
-            </div>
-
-            {/* Remise */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-500 flex-1">Remise globale</span>
-              <div className="flex items-center gap-1 bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5">
-                <input
-                  type="number" min={0} max={100}
-                  className="bg-transparent w-12 text-sm text-right text-slate-200 focus:outline-none mono"
-                  value={discount}
-                  onChange={e => setDiscount(Math.min(100, Math.max(0, +e.target.value)))}
-                />
-                <span className="text-xs text-slate-500">%</span>
-              </div>
-            </div>
-
-            {/* Mode de paiement */}
-            <div className="grid grid-cols-5 gap-1.5">
-              {PAY_METHODS.map(({ id, label, icon: Icon }) => (
-                <button
-                  key={id}
-                  onClick={() => setPayMethod(id)}
-                  title={label}
-                  className={`flex flex-col items-center gap-1 py-2 rounded-xl border text-[10px] font-medium transition-all ${
-                    payMethod === id
-                      ? 'border-pharma-light bg-pharma-pale/20 text-pharma-light'
-                      : 'border-slate-700 text-slate-500 hover:border-slate-600 hover:text-slate-300'
-                  }`}
-                >
-                  <Icon size={15} />
-                  <span>{label}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Montant remis (espèces) */}
-            {payMethod === 'espèces' && (
-              <div className="space-y-1.5">
-                <input
-                  type="number"
-                  className="input input-sm"
-                  placeholder={`Montant remis en CDF (min. ${Math.ceil(total).toLocaleString()})`}
-                  value={amountPaid}
-                  onChange={e => setAmountPaid(e.target.value)}
-                />
-                {change > 0 && (
-                  <div className="flex items-center justify-between bg-emerald-900/25 border border-emerald-900/50 rounded-lg px-3 py-2">
-                    <span className="text-xs text-emerald-400">Monnaie à rendre</span>
-                    <span className="text-sm font-bold mono text-emerald-400">{change.toLocaleString()} CDF</span>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Bouton Encaisser */}
+          <div className="px-4 pb-4 pt-2 flex-shrink-0 bg-slate-900 border-t border-slate-800">
             <button
               onClick={handleCheckout}
-              disabled={cart.length === 0 || saleMut.isPending}
-              className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-semibold rounded-xl py-3.5 text-sm transition-all active:scale-[0.98]"
+              disabled={saleMut.isPending}
+              className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold rounded-xl py-4 text-sm transition-all active:scale-[0.98] shadow-lg shadow-emerald-900/40"
             >
               {saleMut.isPending ? (
                 <>
                   <span className="animate-spin text-base">↻</span>
-                  Traitement en cours...
+                  Traitement...
                 </>
               ) : (
                 <>
-                  <CheckCircle size={17} />
-                  Encaisser — {total.toLocaleString()} CDF
+                  <CheckCircle size={18} />
+                  Encaisser — {Math.round(total).toLocaleString()} CDF
                 </>
               )}
             </button>
