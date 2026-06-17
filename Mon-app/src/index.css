@@ -71,6 +71,18 @@
   .alert-box.amber  { @apply bg-amber-900/20 border-amber-500; }
   .alert-box.blue   { @apply bg-blue-900/20 border-blue-500; }
   .alert-box.green  { @apply bg-emerald-900/20 border-emerald-500; }
+
+  /* Modal responsive */
+  .modal-card  { @apply card w-full p-5 sm:p-6 animate-slide-up max-h-[92vh] overflow-y-auto; }
+
+  /* Table wrapper with horizontal scroll */
+  .table-wrap  { @apply overflow-x-auto -mx-px; }
+  .table-wrap .table { @apply min-w-[600px]; }
+
+  /* Page padding responsive */
+  .page        { @apply p-3 sm:p-6 space-y-4 sm:space-y-5 animate-fade-in; }
+  .page-header { @apply flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3; }
+  .page-actions { @apply flex flex-wrap gap-2; }
 }
 
 @layer utilities {

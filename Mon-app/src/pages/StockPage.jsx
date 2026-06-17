@@ -299,7 +299,7 @@ function AdjustModal({ product, onClose, onSubmit }) {
   const [reason, setReason] = useState('');
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="card w-full max-w-md p-6 animate-slide-up" onClick={e => e.stopPropagation()}>
+      <div className="card w-full max-w-md p-5 sm:p-6 animate-slide-up max-h-[92vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <h3 className="text-base font-semibold text-slate-100 mb-1">Ajuster le stock</h3>
         <p className="text-sm text-slate-500 mb-5">{product.name} · Stock actuel: <strong className="text-slate-300">{product.stock}</strong></p>
         <div className="form-group">
@@ -372,9 +372,9 @@ function AddProductModal({ onClose }) {
             </select>
           </div>
           <div className="form-group"><label className="label">Dosage</label><input className="input" placeholder="ex: 500mg" value={form.dosage} onChange={f('dosage')} /></div>
-          <div className="form-group"><label className="label">Prix achat (DA) *</label><input type="number" className="input" value={form.purchasePrice} onChange={f('purchasePrice')} /></div>
-          <div className="form-group"><label className="label">Prix gros (DA) *</label><input type="number" className="input" value={form.wholesalePrice} onChange={f('wholesalePrice')} /></div>
-          <div className="form-group"><label className="label">Prix détail (DA) *</label><input type="number" className="input" value={form.retailPrice} onChange={f('retailPrice')} /></div>
+          <div className="form-group"><label className="label">Prix achat (CDF) *</label><input type="number" className="input" value={form.purchasePrice} onChange={f('purchasePrice')} /></div>
+          <div className="form-group"><label className="label">Prix gros (CDF) *</label><input type="number" className="input" value={form.wholesalePrice} onChange={f('wholesalePrice')} /></div>
+          <div className="form-group"><label className="label">Prix détail (CDF) *</label><input type="number" className="input" value={form.retailPrice} onChange={f('retailPrice')} /></div>
           <div className="form-group"><label className="label">Stock min</label><input type="number" className="input" value={form.minStock} onChange={f('minStock')} /></div>
           <div className="form-group"><label className="label">Stock max</label><input type="number" className="input" value={form.maxStock} onChange={f('maxStock')} /></div>
           <div className="form-group flex items-center gap-2 sm:col-span-2 pt-2">

@@ -246,7 +246,7 @@ export default function POSPage() {
               </div>
               <div className="text-right min-w-[52px]">
                 <div className="text-xs font-bold mono text-slate-100">{(item.retailPrice * item.qty).toLocaleString()}</div>
-                <div className="text-[10px] text-slate-500">DA</div>
+                <div className="text-[10px] text-slate-500">CDF</div>
               </div>
               <button onClick={() => removeItem(item._id)} className="text-slate-600 hover:text-red-400 transition-colors">
                 <X size={12} />

@@ -116,7 +116,7 @@ function NewOrderModal({ onClose }) {
   });
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="card w-full max-w-lg p-6 animate-slide-up" onClick={e => e.stopPropagation()}>
+      <div className="card w-full max-w-lg p-5 sm:p-6 animate-slide-up max-h-[92vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <h3 className="text-base font-semibold text-slate-100 mb-5">Nouveau bon de commande</h3>
         <div className="form-group"><label className="label">Fournisseur</label>
           <select className="input" value={supplierId} onChange={e => setSupplierId(e.target.value)}>
@@ -130,10 +130,12 @@ function NewOrderModal({ onClose }) {
         <div className="space-y-2 mb-4">
           <label className="label">Articles</label>
           {items.map((item, i) => (
-            <div key={i} className="grid grid-cols-1 sm:grid-cols-12 gap-2">
+            <div key={i} className="flex flex-col gap-2 sm:grid sm:grid-cols-12">
               <input className="input sm:col-span-6" placeholder="Produit" value={item.productName} onChange={e => setItems(it => it.map((x,j) => j===i ? {...x, productName: e.target.value} : x))} />
-              <input type="number" className="input sm:col-span-3" placeholder="Qté" value={item.quantity} onChange={e => setItems(it => it.map((x,j) => j===i ? {...x, quantity:+e.target.value} : x))} />
-              <input type="number" className="input sm:col-span-3" placeholder="PU CDF" value={item.unitPrice} onChange={e => setItems(it => it.map((x,j) => j===i ? {...x, unitPrice:+e.target.value, totalPrice:+e.target.value*item.quantity} : x))} />
+              <div className="flex gap-2 sm:contents">
+                <input type="number" className="input flex-1 sm:col-span-3" placeholder="Qté" value={item.quantity} onChange={e => setItems(it => it.map((x,j) => j===i ? {...x, quantity:+e.target.value} : x))} />
+                <input type="number" className="input flex-1 sm:col-span-3" placeholder="PU CDF" value={item.unitPrice} onChange={e => setItems(it => it.map((x,j) => j===i ? {...x, unitPrice:+e.target.value, totalPrice:+e.target.value*item.quantity} : x))} />
+              </div>
             </div>
           ))}
           <button onClick={() => setItems(it => [...it, {productName:'',quantity:1,unitPrice:0}])} className="btn-ghost btn-sm w-full">+ Ajouter une ligne</button>
@@ -197,7 +199,7 @@ function NewSupplierModal({ onClose }) {
   const mut = useMutation({ mutationFn: supplierService.create, onSuccess: () => { toast.success('Fournisseur créé'); qc.invalidateQueries(['suppliers']); onClose(); }, onError: e => toast.error(e.message) });
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="card w-full max-w-md p-6 animate-slide-up" onClick={e => e.stopPropagation()}>
+      <div className="card w-full max-w-md p-5 sm:p-6 animate-slide-up max-h-[92vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <h3 className="text-base font-semibold text-slate-100 mb-5">Nouveau fournisseur</h3>
         <div className="space-y-3">
           <div><label className="label">Raison sociale *</label><input className="input" value={form.name} onChange={e => setForm(f=>({...f,name:e.target.value}))} /></div>
@@ -285,7 +287,7 @@ function NewClientModal({ onClose }) {
   const valid = form.firstName.trim() && form.lastName.trim() && form.phone.trim();
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="card w-full max-w-md p-6 animate-slide-up" onClick={e => e.stopPropagation()}>
+      <div className="card w-full max-w-md p-5 sm:p-6 animate-slide-up max-h-[92vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <h3 className="text-base font-semibold text-slate-100 mb-4">Nouveau client</h3>
         <div className="grid grid-cols-2 gap-3 mb-3">
           <div className="form-group mb-0"><label className="label">Prénom *</label><input className="input" value={form.firstName} onChange={f('firstName')} placeholder="Prénom" /></div>
@@ -471,7 +473,7 @@ function ScanPrescriptionModal({ onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="card w-full max-w-md p-6 animate-slide-up" onClick={e => e.stopPropagation()}>
+      <div className="card w-full max-w-md p-5 sm:p-6 animate-slide-up max-h-[92vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <h3 className="text-base font-semibold text-slate-100 mb-4">Enregistrer une ordonnance</h3>
 
         {/* Zone d'upload */}
@@ -596,7 +598,7 @@ export function InvoicesPage() {
     <div className="p-4 sm:p-6 space-y-5 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div><h1 className="text-xl font-semibold text-slate-100">Facturation</h1><p className="text-sm text-slate-500 mt-0.5">Factures et règlements</p></div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button onClick={printReport} disabled={invoices.length === 0} className="btn-ghost btn-sm"><Download size={14} /> Rapport PDF</button>
           <button onClick={() => setShowNew(true)} className="btn-primary btn-sm"><Plus size={14} /> Nouvelle facture</button>
         </div>
@@ -706,32 +708,34 @@ function NewInvoiceModal({ onClose }) {
           <label className="label mb-2 block">Lignes de facturation</label>
           <div className="space-y-2">
             {items.map((item, i) => (
-              <div key={i} className="grid grid-cols-12 gap-2 items-center">
+              <div key={i} className="flex flex-col gap-2 sm:grid sm:grid-cols-12 sm:items-center">
                 <input
-                  className="input col-span-6"
+                  className="input sm:col-span-6"
                   placeholder="Description"
                   value={item.description}
                   onChange={e => updateItem(i, 'description', e.target.value)}
                 />
-                <input
-                  type="number" min="1"
-                  className="input col-span-2"
-                  placeholder="Qté"
-                  value={item.quantity}
-                  onChange={e => updateItem(i, 'quantity', +e.target.value)}
-                />
-                <input
-                  type="number" min="0"
-                  className="input col-span-3"
-                  placeholder="Prix unit."
-                  value={item.unitPrice}
-                  onChange={e => updateItem(i, 'unitPrice', +e.target.value)}
-                />
-                <button
-                  onClick={() => setItems(prev => prev.filter((_, j) => j !== i))}
-                  disabled={items.length === 1}
-                  className="btn-ghost btn-sm btn-icon col-span-1 text-red-400 disabled:opacity-20"
-                >✕</button>
+                <div className="flex gap-2 sm:contents">
+                  <input
+                    type="number" min="1"
+                    className="input flex-1 sm:col-span-2"
+                    placeholder="Qté"
+                    value={item.quantity}
+                    onChange={e => updateItem(i, 'quantity', +e.target.value)}
+                  />
+                  <input
+                    type="number" min="0"
+                    className="input flex-1 sm:col-span-3"
+                    placeholder="Prix unit."
+                    value={item.unitPrice}
+                    onChange={e => updateItem(i, 'unitPrice', +e.target.value)}
+                  />
+                  <button
+                    onClick={() => setItems(prev => prev.filter((_, j) => j !== i))}
+                    disabled={items.length === 1}
+                    className="btn-ghost btn-sm btn-icon sm:col-span-1 text-red-400 disabled:opacity-20 flex-shrink-0"
+                  >✕</button>
+                </div>
               </div>
             ))}
           </div>
@@ -885,7 +889,7 @@ function NewUserModal({ onClose }) {
   const f = k => e => setForm(s=>({...s,[k]:e.target.value}));
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="card w-full max-w-md p-6 animate-slide-up" onClick={e=>e.stopPropagation()}>
+      <div className="card w-full max-w-md p-5 sm:p-6 animate-slide-up max-h-[92vh] overflow-y-auto" onClick={e=>e.stopPropagation()}>
         <h3 className="text-base font-semibold text-slate-100 mb-5">Nouveau compte utilisateur</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div><label className="label">Prénom *</label><input className="input" value={form.firstName} onChange={f('firstName')} /></div>

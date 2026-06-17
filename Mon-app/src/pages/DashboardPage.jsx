@@ -151,7 +151,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Secondary KPIs */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {[
           { label: 'Ruptures', value: kpis?.stock?.rupture || 0, color: 'text-red-400', bg: 'bg-red-900/20 border-red-900' },
           { label: 'Stock bas', value: kpis?.stock?.lowStock || 0, color: 'text-amber-400', bg: 'bg-amber-900/20 border-amber-900' },
@@ -168,7 +168,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Sales trend */}
         <div className="lg:col-span-2 card">
-          <div className="card-header flex-col sm:flex-row items-start sm:items-center gap-2">
+          <div className="card-header flex-wrap flex-col sm:flex-row items-start sm:items-center gap-2">
             <div>
               <div className="text-sm font-semibold text-slate-100">Évolution des ventes</div>
               <div className="text-xs text-slate-500 mt-0.5">Chiffre d'affaires en CDF</div>
@@ -182,8 +182,8 @@ export default function DashboardPage() {
               ))}
             </div>
           </div>
-          <div className="p-5">
-            <div style={{ height: 220 }}>
+          <div className="p-3 sm:p-5">
+            <div className="h-40 sm:h-56">
               {salesChart.length > 0 ? (
                 <Line data={lineData} options={{ ...CHART_DEFAULTS, scales: { ...CHART_DEFAULTS.scales, y: { ...CHART_DEFAULTS.scales.y, ticks: { ...CHART_DEFAULTS.scales.y.ticks, callback: v => `${(v/1000).toFixed(0)}K` } } } }} />
               ) : (
@@ -198,10 +198,10 @@ export default function DashboardPage() {
           <div className="card-header">
             <div className="text-sm font-semibold text-slate-100">Répartition</div>
           </div>
-          <div className="p-5">
+          <div className="p-3 sm:p-5">
             {categories.length > 0 ? (
               <>
-                <div style={{ height: 160 }}>
+                <div className="h-36 sm:h-40">
                   <Doughnut data={donutData} options={{ ...CHART_DEFAULTS, cutout: '68%', scales: undefined }} />
                 </div>
                 <div className="space-y-2 mt-4">
@@ -262,9 +262,9 @@ export default function DashboardPage() {
           <div className="card-header">
             <div className="text-sm font-semibold text-slate-100">Modes de paiement (30j)</div>
           </div>
-          <div className="p-5">
+          <div className="p-3 sm:p-5">
             {payMethods.length > 0 ? (
-              <div style={{ height: 200 }}>
+              <div className="h-44 sm:h-52">
                 <Bar data={barData} options={{ ...CHART_DEFAULTS, scales: { ...CHART_DEFAULTS.scales, y: { ...CHART_DEFAULTS.scales.y, ticks: { ...CHART_DEFAULTS.scales.y.ticks, callback: v => `${(v/1000).toFixed(0)}K` } } } }} />
               </div>
             ) : (
