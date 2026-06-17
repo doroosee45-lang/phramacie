@@ -78,14 +78,16 @@ exports.createSale = asyncHandler(async (req, res) => {
     });
   }
 
-  const subtotal = enrichedItems.reduce((s, i) => s + i.totalPrice, 0);
-  const discountAmt = (subtotal * discount) / 100;
-  const tva = (subtotal - discountAmt) * 0.19;
-  const total = subtotal - discountAmt + tva;
-  const change = amountPaid ? Math.max(0, amountPaid - total) : 0;
+  const subtotal    = enrichedItems.reduce((s, i) => s + i.totalPrice, 0);
+  const discountAmt = Math.round((subtotal * discount) / 100 * 100) / 100;
+  const tva         = Math.round((subtotal - discountAmt) * 0.19 * 100) / 100;
+  const total       = Math.round((subtotal - discountAmt + tva) * 100) / 100;
+  const change      = amountPaid ? Math.max(0, amountPaid - total) : 0;
 
   const sale = await Sale.create({
-    items: enrichedItems, clientId, prescriptionId,
+    items: enrichedItems,
+    client: clientId || null,
+    prescription: prescriptionId || null,
     subtotal, discount: discountAmt, tva, total,
     paymentMethod: paymentMethod || 'espèces',
     amountPaid, change, cashier: req.user._id, isOffline,
@@ -106,7 +108,7 @@ exports.createSale = asyncHandler(async (req, res) => {
 
   // Auto-generate invoice
   const invoice = await Invoice.create({
-    type: 'vente', sale: sale._id, clientId,
+    type: 'vente', sale: sale._id, client: clientId || null,
     items: enrichedItems.map(i => ({
       description: i.name, quantity: i.quantity,
       unitPrice: i.unitPrice, tvaRate: 19,
